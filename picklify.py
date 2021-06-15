@@ -84,13 +84,6 @@ if __name__ == '__main__':
     parser.add_argument('in_dir', help='path to dir with pre-generated input files')
     args = parser.parse_args()
 
-    # TODO wskaż katalog in + katalog out (użytkownik wybiera)
-    # TODO - bez podania k_length jako argumentu
-    # TODO - dodaj inne rodzaje dystansu, np. euklidian, pearson, google itp. - również jako argument
-    # TODO - połącz pliki create_files i create_pickles
-    # default - dystans manhattan
-    # choices w argumencie w argparsie
-
     path = pathlib.Path(f'./{args.in_dir}/')
 
     organisms = ['virus', 'host']
@@ -104,5 +97,3 @@ if __name__ == '__main__':
     # create pickles
     create_pickles(path, organisms, kmer_universe, kmer_dict)
 
-    # calculate manhattan distances and print the results to file
-    # calculate_manhattan_distance(path)

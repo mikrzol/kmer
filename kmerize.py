@@ -51,15 +51,6 @@ if __name__ == '__main__':
                         help='choose which distance to calculate if any')
     args = parser.parse_args()
 
-    # DONE
-    # TODO zmień nazwę na kmerize
-    # TODO saved files names : virus.txt + host.txt (zamiast virus_k_mers.txt etc)
-    # TODO dodaj argument do -t w threads jellyfish
-    # TODO podawanie katalogów z sekwencjami osobno dla wirusa + dla hosta
-    # TODO add possibility to choose where to save the files from args + out_dir
-    # TODO jak nie ma katalogu, to go tworzę
-    # TODO - użytkownik podaje katalog wynikowy - ja tworzę strukturę w środku
-
     if args.s:
         dest = args.o
     else:
