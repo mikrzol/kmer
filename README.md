@@ -1,4 +1,4 @@
-REQUIRED PACKAGES: numpy, pickle
+REQUIRED PACKAGES: numpy, pickle, jellyfish
 
 HOW TO USE:
 
