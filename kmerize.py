@@ -92,4 +92,5 @@ if __name__ == '__main__':
     if args.d:
         print(f'Calculating {args.d} distance...')
         distance.manhattan(dest)
-        print('DONE')
+
+    print('DONE')
