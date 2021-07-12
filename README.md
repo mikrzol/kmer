@@ -1,4 +1,5 @@
 REQUIRED PACKAGES: numpy, scipy, pickle, jellyfish 
+
 HOW TO USE:
 
 Use kmerize.py as the main file to control the program. 
