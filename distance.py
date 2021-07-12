@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 import scipy.spatial as sp
 
-
+'''
 # tutaj funkcje: manhattan, euclidean itp. - zwracają konkretną wartość float
 def manhattan(virus, h_list):
     return np.sum(np.abs(virus - h_list))
@@ -25,7 +25,7 @@ def chebyshev(virus, h_list):
 
 def cosine(virus, h_list):
     return sp.distance.cosine(virus, h_list)
-
+'''
 
 def distance(path, dist_type):
     # read pickles and create the results file
