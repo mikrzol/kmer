@@ -47,7 +47,8 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--host_dir', dest='b', help='path to dir with bacteria (host) sequences')
     parser.add_argument('-v', '--vir_dir', dest='v', help='path to dir with virus sequences')
     parser.add_argument('-p', '--pickle', dest='p', action='store_true', help='select this to create pickle files')
-    parser.add_argument('-d', '--distance', dest='d', choices=['manhattan'],
+    parser.add_argument('-d', '--distance', dest='d', 
+        choices=['manhattan', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis'],
                         help='choose which distance to calculate if any')
     args = parser.parse_args()
 
@@ -82,6 +83,6 @@ if __name__ == '__main__':
         picklify.create_pickles(dest, orgs, kmer_universe, kmer_dict)
     if args.d:
         print(f'Calculating {args.d} distance...')
-        distance.manhattan(dest)
+        distance.distance(dest, args.d)
 
     print('DONE')
