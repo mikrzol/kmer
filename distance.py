@@ -2,30 +2,51 @@ import pathlib
 import argparse
 import numpy as np
 import pickle
-import scipy.spatial as sp
-
-'''
-# tutaj funkcje: manhattan, euclidean itp. - zwracają konkretną wartość float
-def manhattan(virus, h_list):
-    return np.sum(np.abs(virus - h_list))
+import math
+import time
+# import scipy.spatial as sp
 
 
-def euclidean(virus, h_list):
+# TODO implement these functions myself
+def manhattan(virus, host):
+    return np.sum(np.abs(virus - host))
+
+
+def euclidean(virus, host):
     # euclidean distance is the i2 norm, so we can use the numpy.linalg.norm function
-    return np.linalg.norm(virus - h_list)
+    return np.linalg.norm(virus - host)
 
 
-def canberra(virus, h_list):
-    return sp.distance.canberra(virus, h_list)
+def chebyshev(virus, host):
+    return np.max(np.abs(virus - host))
 
 
-def chebyshev(virus, h_list):
-    return sp.distance.chebyshev(virus, h_list)
+def canberra(virus, host):
+    return np.nansum(abs(virus - host) / (abs(virus) + abs(host)))
 
 
-def cosine(virus, h_list):
-    return sp.distance.cosine(virus, h_list)
-'''
+def cosine(virus, host):
+    # it's the distance, so we need to subtract the similarity coeff from 1
+    a = np.dot(virus, host)
+    b = np.sqrt(np.dot(virus, virus)) * np.sqrt(np.dot(host, host))
+    return 1 - np.divide(a, b, out=np.zeros_like(a), where=b!=0)
+
+
+def braycurtis(virus, host):
+    a = np.sum(np.abs(virus - host))
+    b = np.sum(np.abs(virus + host))
+    return np.divide(a, b, out=np.zeros_like(a), where=b!=0)
+
+
+def pearson(virus, host):
+    # return 1 - np.corrcoef(virus, host)[0][1]
+    v_avg = np.sum(virus) / len(virus)
+    h_avg = np.sum(host) / len(host)
+    numerator = np.sum(np.subtract(virus, v_avg) * np.subtract(host, h_avg))
+    denominator = np.sqrt(np.sum((virus - v_avg)**2)) * np.sqrt(np.sum((host - h_avg)**2))
+    # need to return 1 - coeff -> the distance
+    return 1 - np.divide(numerator, denominator, out=np.zeros_like(numerator), where=denominator!=0)
+
 
 def distance(path, dist_type):
     # read pickles and create the results file
@@ -49,8 +70,8 @@ def distance(path, dist_type):
                     # tutaj można skorzystać z yield
                     # virus[0] -> name; virus[1] -> pickled array 
                     results_file.write(f'{virus[0]}\t{host_name}\t'
-                                        f'{eval(f"sp.distance.{dist_type}(virus[1], h_list)")}\n'
-                                       # f'{eval(dist_type + f"(virus[1], h_list)")}\n'
+                                        f'{eval(dist_type + f"(virus[1], h_list)")}\n'
+                                       # f'{eval(f"sp.distance.{dist_type}(virus[1], h_list)")}\n'
                                        )
 
 
@@ -61,7 +82,7 @@ if __name__ == '__main__':
     parser.add_argument(
         'in_dir', help='path to dir with pre-generated input files')
     parser.add_argument('distance', 
-        choices=['manhattan', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis'],
+        choices=['manhattan', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis', 'pearson'],
                         help='choose which distance to calculate if any')
     args = parser.parse_args()
     path = pathlib.Path(f'./{args.in_dir}/')
@@ -71,7 +92,11 @@ if __name__ == '__main__':
     # TODO - add different types of distance
 
     print(f'Calculating {args.distance} distance...')
+    start = time.time()
     distance(path, args.distance)
+    end = time.time()
+    print('DONE')
+    print(f'Time elapsed: {end - start:.2f}')
 
     # TODO współczynnik korelacji liniowej - Pearsona - trzeba sprytnie zmienić na dystans
     # wyżej: najmniejszy dystans powinna mieć 1, a najmniejszy: -1
