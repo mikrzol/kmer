@@ -1,14 +1,12 @@
 import pathlib
 import argparse
 import numpy as np
-import pickle
-import math
+from pickle import load as p_load
 import time
-# import scipy.spatial as sp
 
 
 # TODO implement these functions myself
-def manhattan(virus, host):
+def cityblock(virus, host):
     return np.sum(np.abs(virus - host))
 
 
@@ -39,7 +37,7 @@ def braycurtis(virus, host):
 
 
 def pearson(virus, host):
-    # return 1 - np.corrcoef(virus, host)[0][1]
+    # custom implementation is faster than numpy's
     v_avg = np.sum(virus) / len(virus)
     h_avg = np.sum(host) / len(host)
     numerator = np.sum(np.subtract(virus, v_avg) * np.subtract(host, h_avg))
@@ -58,16 +56,13 @@ def distance(path, dist_type):
         for virus_file in virus_path.iterdir():
             virus_name = virus_file.stem
             with open(virus_file, 'rb') as vh:
-                virus_list.append((virus_name, pickle.load(vh)))
+                virus_list.append((virus_name, p_load(vh)))
 
         for host_file in host_path.iterdir():
             host_name = host_file.stem
             with open(host_file, 'rb') as hh:
-                h_list = pickle.load(hh)
-                # TODO maybe - add multiprocessing - calculate distances,
-                #  save them to a list and write the whole list to a file
+                h_list = p_load(hh)
                 for virus in virus_list:
-                    # tutaj można skorzystać z yield
                     # virus[0] -> name; virus[1] -> pickled array 
                     results_file.write(f'{virus[0]}\t{host_name}\t'
                                         f'{eval(dist_type + f"(virus[1], h_list)")}\n'
@@ -82,21 +77,15 @@ if __name__ == '__main__':
     parser.add_argument(
         'in_dir', help='path to dir with pre-generated input files')
     parser.add_argument('distance', 
-        choices=['manhattan', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis', 'pearson'],
+        choices=['manhattan', 'cityblock', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis', 'pearson'],
                         help='choose which distance to calculate if any')
     args = parser.parse_args()
     path = pathlib.Path(f'./{args.in_dir}/')
     args.distance = 'cityblock' if args.distance == 'manhattan' else args.distance
-
-    # TODO - add possibility to choose which kind of organism to use
-    # TODO - add different types of distance
 
     print(f'Calculating {args.distance} distance...')
     start = time.time()
     distance(path, args.distance)
     end = time.time()
     print('DONE')
-    print(f'Time elapsed: {end - start:.2f}')
-
-    # TODO współczynnik korelacji liniowej - Pearsona - trzeba sprytnie zmienić na dystans
-    # wyżej: najmniejszy dystans powinna mieć 1, a najmniejszy: -1
+    print(f'Time elapsed: {end - start:.2f}s')
