@@ -48,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--vir_dir', dest='v', help='path to dir with virus sequences')
     parser.add_argument('-p', '--pickle', dest='p', action='store_true', help='select this to create pickle files')
     parser.add_argument('-d', '--distance', dest='d', 
-        choices=['manhattan', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis'],
+        choices=['manhattan', 'cityblock', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis', 'pearson'],
                         help='choose which distance to calculate if any')
     args = parser.parse_args()
 
