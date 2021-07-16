@@ -6,6 +6,7 @@ import distance
 
 
 def create_mer_count_files(organisms, k_mer_length, threads, dest_loc):
+    print(f'dest_loc = {dest_loc}')
     # create the output folder if it does not exist
     dest_path = pathlib.Path(dest_loc)
     dest_path.mkdir(parents=True, exist_ok=True)
@@ -24,17 +25,17 @@ def create_mer_count_files(organisms, k_mer_length, threads, dest_loc):
 
         for filename in path.iterdir():
             seqid = filename.stem
-            os.system(f'jellyfish count -m {k_mer_length} -s 100M -t {threads} -C {filename}')
-            os.system(f"jellyfish dump mer_counts.jf -c > dumped.txt")
+            os.system(f'jellyfish count -m {k_mer_length} -s 100M -t {threads} -C {filename} -o {dest_loc}/mer_counts.jf')
+            os.system(f"jellyfish dump {dest_loc}/mer_counts.jf -c > {dest_loc}/dumped.txt")
             with open(f'{dest_loc}/{organism[0]}.txt', 'a') as k_mers_file:
                 k_mers_file.write(f'>{seqid}\n')
-                with open('dumped.txt', 'r') as dumped:
+                with open(f'{dest_loc}/dumped.txt', 'r') as dumped:
                     for line in dumped:
                         k_mers_file.write(f'{line}')
                     k_mers_file.write(f'\n')
 
-    os.remove('dumped.txt')
-    os.remove('mer_counts.jf')
+    os.remove(f'{dest_loc}/dumped.txt')
+    os.remove(f'{dest_loc}/mer_counts.jf')
 
 
 if __name__ == '__main__':
@@ -46,43 +47,16 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out_dir', dest='o', default='./', help='location to save the files to [default=./]')
     parser.add_argument('-b', '--host_dir', dest='b', help='path to dir with bacteria (host) sequences')
     parser.add_argument('-v', '--vir_dir', dest='v', help='path to dir with virus sequences')
-    parser.add_argument('-p', '--pickle', dest='p', action='store_true', help='select this to create pickle files')
-    parser.add_argument('-d', '--distance', dest='d', 
-        choices=['manhattan', 'cityblock', 'euclidean', 'canberra', 'chebyshev', 'cosine', 'braycurtis', 'pearson'],
-                        help='choose which distance to calculate if any')
     args = parser.parse_args()
 
-    if args.s:
-        dest = args.o
-    else:
-        dest = f'{args.o}/k{args.k}'
+    dest = args.o
 
     if not args.s:
-        # dest = f'{args.o}/k{args.k}'
         organisms = []
         if args.v:
             organisms.append(['virus', args.v])
         if args.b:
             organisms.append(['host', args.b])
         create_mer_count_files(organisms, args.k, args.t, dest)
-
-    if args.p:
-        print(f'Creating pickle files...')
-        # if args.s:
-        #     dest = args.o
-        # getting kmer_universe requires both host and virus files
-        orgs = ['virus', 'host']
-
-        # create the k_mer universe - a set of all kmers present across all the files for k_mers of this length
-        kmer_universe = picklify.get_kmer_universe(dest, orgs)
-
-        # kmer_dict - i stands for the index we're going to write the frequency of a particular kmer in an organism to
-        kmer_dict = {kmer: i for i, kmer in enumerate(kmer_universe)}
-
-        # create pickles
-        picklify.create_pickles(dest, orgs, kmer_universe, kmer_dict)
-    if args.d:
-        print(f'Calculating {args.d} distance...')
-        distance.distance(dest, args.d)
 
     print('DONE')

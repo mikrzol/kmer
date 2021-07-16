@@ -96,4 +96,3 @@ if __name__ == '__main__':
 
     # create pickles
     create_pickles(path, organisms, kmer_universe, kmer_dict)
-

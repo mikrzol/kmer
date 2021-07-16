@@ -47,6 +47,7 @@ def pearson(virus, host):
 
 
 def distance(path, dist_type):
+    dist_type = 'cityblock' if dist_type == 'manhattan' else dist_type
     # read pickles and create the results file
     virus_path = pathlib.Path(f'./{str(path)}/virus_pickles/')
     host_path = pathlib.Path(f'./{str(path)}/host_pickles/')
@@ -81,7 +82,6 @@ if __name__ == '__main__':
                         help='choose which distance to calculate if any')
     args = parser.parse_args()
     path = pathlib.Path(f'./{args.in_dir}/')
-    args.distance = 'cityblock' if args.distance == 'manhattan' else args.distance
 
     print(f'Calculating {args.distance} distance...')
     start = time.time()

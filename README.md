@@ -1,10 +1,23 @@
-REQUIRED PACKAGES: numpy, scipy, pickle, jellyfish 
+REQUIRED PACKAGES: numpy, pickle, jellyfish 
 
 HOW TO USE:
 
-Use kmerize.py as the main file to control the program. 
+Use control.py as the main file to control the program. Refer to control.py help (control.py -h) to see available options.
 
-Bear in mind that you can skip the kmerization process with the -s argument.
-Use this to control which parts of the task to perform. 
+Example control.py terminal calls:
 
-distance.py and picklify.py are here just to keep the project readable and modular, but can be used on their own if needed. 
+Perform all the steps and save the results (virus.txt, host.txt, dirs with pickle files and manhattan distance file) to ./k6 directory:
+``` console
+foo@bar:~$ python3 control.py -k 6 -o ./k6 -b ./host_dir/ -v ./virus_dir -p -d manhattan 
+```
+
+Prepare the files needed for distance calculations:
+``` console
+foo@bar:~$ python3 control.py -k 7 -o ./k7 -b ./host_dir/ -v ./virus_dir -p
+```
+
+Calculate Canberra distance on prepared files (requires the files from the picklify step):
+``` console
+foo@bar:~$ python3 control.py -o ./k7 -d canberra
+```
+kmerize.py, distance.py and picklify.py can also be used on their own if needed. 
